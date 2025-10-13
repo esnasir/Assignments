@@ -18,26 +18,26 @@ import java.util.*;
 public class Operations{
     // 1. Unique palindromes in a string
     public static int getUniquePalindromes(String s) {
-        int result = 0;
+        Set<String> unique = new HashSet<>();
         for (int i = 0; i < s.length(); i++) {
-            result += expandAndCollectPalindromes(s, i, i);
-            result += expandAndCollectPalindromes(s, i, i + 1);
+            expandAndCollectPalindromes(s, i, i, unique);      // odd
+            expandAndCollectPalindromes(s, i, i + 1, unique);  // even
         }
-        return result;
+        return unique.size();
     }
-    private static int expandAndCollectPalindromes(String s, int left, int right) {
-        int count = 0;
+
+    private static void expandAndCollectPalindromes(String s, int left, int right, Set<String> unique) {
         while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)) {
-            if (right - left + 1 > 1) count++;
+            if(right - left + 1 > 1) unique.add(s.substring(left, right + 1));
             left--; right++;
         }
-        return count;
     }
+
 
     // 2. Nth fibonacci number
     public static int getNthFibonacci(int n) {
-        if (n <= 0) return 0;
-        if (n == 1 || n == 2) return 1;
+        if (n <= 1) return 0;
+        if (n == 2 || n == 3) return 1;
         int a = 1, b = 1;
         for (int i = 3; i <= n; i++) {
             int temp = a + b;
@@ -123,24 +123,30 @@ public class Operations{
     // 9. Number to words
     public static String convertNumberToWords(int num) {
         if (num == 0) return "zero";
+        if (num < 0) return "minus " + convertNumberToWords(-num);
+
         String[] belowTwenty = {"", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
                 "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
                 "seventeen", "eighteen", "nineteen"};
         String[] tens = {"", "", "twenty", "thirty", "forty", "fifty", "sixty",
                 "seventy", "eighty", "ninety"};
+
         StringBuilder words = new StringBuilder();
 
         if (num >= 100) {
-            words.append(belowTwenty[num / 100]).append(" hundred ");
+            words.append(belowTwenty[num / 100]).append(" hundred");
             num %= 100;
+            if (num > 0) words.append(" and ");
         }
         if (num >= 20) {
-            words.append(tens[num / 10]).append(" ");
+            words.append(tens[num / 10]);
             num %= 10;
+            if (num > 0) words.append(" ");
         }
-        if (num > 0) {
+        if (num > 0 && num < 20) {
             words.append(belowTwenty[num]);
         }
+
         return words.toString().trim();
     }
 
